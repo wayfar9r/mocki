@@ -1,32 +1,35 @@
-use std::{collections::VecDeque, cell::RefCell};
+use std::{cell::RefCell, collections::VecDeque};
 
-trait Mocki<T> {
-    fn add_value(&self, val: T);
+pub trait Mocki<T> {
+    fn add_value(&self, val: T) -> &Self;
 
     fn mock_once(&self) -> T;
 
     fn register_call(&self, times: u32);
 
-    fn get_calls(&self) -> u32;
+    fn calls(&self) -> u32;
 
     fn value_count(&self) -> usize;
 }
 
-struct Mock<T> {
+pub struct Mock<T> {
     values: RefCell<VecDeque<T>>,
-    calls: RefCell<u32>, 
+    calls: RefCell<u32>,
 }
 
 impl<T> Mock<T> {
-    #[allow(unused)]
-    fn new() -> Mock<T> {
-        Mock { values: RefCell::new(VecDeque::new()), calls: RefCell::new(0) }
+    pub fn new() -> Mock<T> {
+        Mock {
+            values: RefCell::new(VecDeque::new()),
+            calls: RefCell::new(0),
+        }
     }
 }
 
 impl<T> Mocki<T> for Mock<T> {
-    fn add_value(&self, val: T) {
+    fn add_value(&self, val: T) -> &Self {
         self.values.borrow_mut().push_back(val);
+        self
     }
 
     fn mock_once(&self) -> T {
@@ -38,12 +41,18 @@ impl<T> Mocki<T> for Mock<T> {
         *self.calls.borrow_mut() += times;
     }
 
-    fn get_calls(&self) -> u32 {
+    fn calls(&self) -> u32 {
         *self.calls.borrow()
     }
 
     fn value_count(&self) -> usize {
         (*self.values.borrow()).len()
+    }
+}
+
+impl Default for Mock<String> {
+    fn default() -> Self {
+        Mock::new()
     }
 }
 
@@ -59,6 +68,8 @@ mod tests {
         mock.add_value("two".to_string());
         let mocked_value = mock.mock_once();
         assert_eq!(value_to_mock, mocked_value.as_str());
-        assert!(mock.get_calls() == 1);
+        mock.mock_once();
+        assert!(mock.calls() == 2);
+        assert_eq!(mock.value_count(), 0);
     }
 }
