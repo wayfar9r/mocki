@@ -1,14 +1,25 @@
+//! Simple mock realization
+//! 
+//! it will be more likely refactored and extended, I hope)
+//! 
+
 use std::{cell::RefCell, collections::VecDeque};
 
 pub trait Mocki<T> {
+    /// Adds a value to mock
     fn add_value(&self, val: T) -> &Self;
 
+    /// Returns a mocked value
+    /// and counts mocked function call
     fn mock_once(&self) -> T;
 
-    fn register_call(&self, times: u32);
+    /// Counts a call of mocked function
+    fn register_call(&self, times: u32) -> &Self;
 
+    /// Returns a calls count of mocked function
     fn calls(&self) -> u32;
 
+    /// Returns a count of mocked values
     fn value_count(&self) -> usize;
 }
 
@@ -37,8 +48,9 @@ impl<T> Mocki<T> for Mock<T> {
         self.values.borrow_mut().pop_front().unwrap()
     }
 
-    fn register_call(&self, times: u32) {
+    fn register_call(&self, times: u32) -> &Self {
         *self.calls.borrow_mut() += times;
+        self
     }
 
     fn calls(&self) -> u32 {
@@ -61,7 +73,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
+    fn basic() {
         let mock = Mock::new();
         let value_to_mock = "one";
         mock.add_value(value_to_mock.to_owned());
