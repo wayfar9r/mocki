@@ -2,7 +2,7 @@
 name = "mocki"
 description = "A simple mock realization"
 keywords = ["test", "mock"]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 repository = "https://github.com/wayfar9r/mocki.git"
 authors = ["Artemij Artemev"]

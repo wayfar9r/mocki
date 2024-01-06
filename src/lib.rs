@@ -7,14 +7,14 @@ use std::{cell::RefCell, collections::VecDeque};
 
 pub trait Mocki<T> {
     /// Adds a value to mock
-    fn add_value(&self, val: T) -> &Self;
+    fn add_value(&self, val: T);
 
     /// Returns a mocked value
     /// and counts mocked function call
     fn mock_once(&self) -> T;
 
     /// Counts a call of mocked function
-    fn register_call(&self, times: u32) -> &Self;
+    fn register_call(&self, times: u32);
 
     /// Returns a calls count of mocked function
     fn calls(&self) -> u32;
@@ -38,9 +38,8 @@ impl<T> Mock<T> {
 }
 
 impl<T> Mocki<T> for Mock<T> {
-    fn add_value(&self, val: T) -> &Self {
+    fn add_value(&self, val: T) {
         self.values.borrow_mut().push_back(val);
-        self
     }
 
     fn mock_once(&self) -> T {
@@ -48,9 +47,8 @@ impl<T> Mocki<T> for Mock<T> {
         self.values.borrow_mut().pop_front().unwrap()
     }
 
-    fn register_call(&self, times: u32) -> &Self {
+    fn register_call(&self, times: u32) {
         *self.calls.borrow_mut() += times;
-        self
     }
 
     fn calls(&self) -> u32 {
